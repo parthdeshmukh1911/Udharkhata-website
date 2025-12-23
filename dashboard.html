@@ -43,6 +43,7 @@
             padding: 2rem 0;
             overflow-y: auto;
             transition: transform 0.3s;
+            z-index: 1000;
         }
 
         .logo {
@@ -117,6 +118,21 @@
             align-items: center;
         }
 
+        .user-info {
+            text-align: right;
+            margin-right: 1rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .user-email {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
         .user-avatar {
             width: 45px;
             height: 45px;
@@ -152,6 +168,17 @@
             background: var(--primary-dark);
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: var(--white);
         }
 
         /* Stats Grid */
@@ -204,19 +231,9 @@
             margin-bottom: 0.5rem;
         }
 
-        .stat-change {
+        .stat-subtitle {
             font-size: 0.875rem;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .stat-change.positive {
-            color: var(--secondary);
-        }
-
-        .stat-change.negative {
-            color: var(--danger);
+            color: var(--gray);
         }
 
         /* Dashboard Grid */
@@ -284,6 +301,7 @@
             justify-content: center;
             font-weight: 600;
             color: var(--primary);
+            font-size: 0.9rem;
         }
 
         .transaction-details h4 {
@@ -305,7 +323,7 @@
             color: var(--secondary);
         }
 
-        .transaction-amount.debit {
+        .transaction-amount.payment {
             color: var(--danger);
         }
 
@@ -350,18 +368,6 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
-        /* Chart Placeholder */
-        .chart-placeholder {
-            height: 250px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            font-size: 1.1rem;
-        }
-
         /* Customers Table */
         .customers-table {
             width: 100%;
@@ -403,6 +409,49 @@
             color: var(--danger);
         }
 
+        .badge-warning {
+            background: #fef3c7;
+            color: var(--warning);
+        }
+
+        .badge-free {
+            background: var(--gray-light);
+            color: var(--gray);
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray);
+        }
+
+        .spinner {
+            border: 3px solid var(--light);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .dashboard-grid {
@@ -413,6 +462,10 @@
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
             }
 
             .main-content {
@@ -427,12 +480,33 @@
                 flex-direction: column;
                 gap: 1rem;
             }
+
+            .menu-toggle {
+                display: block;
+                position: fixed;
+                top: 1rem;
+                left: 1rem;
+                z-index: 1001;
+                background: var(--primary);
+                color: white;
+                border: none;
+                padding: 0.75rem;
+                border-radius: 8px;
+                cursor: pointer;
+            }
+        }
+
+        .menu-toggle {
+            display: none;
         }
     </style>
 </head>
 <body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
     <!-- Sidebar -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
         <div class="logo">📒 UdharKhata Plus</div>
         <ul class="menu">
             <li class="menu-item active">
@@ -450,10 +524,6 @@
             <li class="menu-item">
                 <span class="menu-icon">📈</span>
                 <span>Reports</span>
-            </li>
-            <li class="menu-item">
-                <span class="menu-icon">💬</span>
-                <span>Reminders</span>
             </li>
             <li class="menu-item">
                 <span class="menu-icon">⚙️</span>
@@ -475,9 +545,10 @@
                 <p id="currentDate"></p>
             </div>
             <div class="header-right">
-                <button class="btn btn-primary" onclick="addTransaction()">
-                    <span>➕</span> Add Transaction
-                </button>
+                <div class="user-info">
+                    <div class="user-name" id="userNameDisplay">Loading...</div>
+                    <div class="user-email" id="userEmail">Loading...</div>
+                </div>
                 <div class="user-avatar" id="userAvatar">U</div>
             </div>
         </header>
@@ -490,10 +561,7 @@
                     <div class="stat-icon" style="background: #dbeafe; color: #3b82f6;">👥</div>
                 </div>
                 <div class="stat-value" id="totalCustomers">0</div>
-                <div class="stat-change positive">
-                    <span>↑ 12%</span>
-                    <span style="color: var(--gray);">vs last month</span>
-                </div>
+                <div class="stat-subtitle">Active customers</div>
             </div>
 
             <div class="stat-card">
@@ -502,10 +570,7 @@
                     <div class="stat-icon" style="background: #d1fae5; color: #10b981;">💰</div>
                 </div>
                 <div class="stat-value" style="color: var(--secondary);" id="toReceive">₹0</div>
-                <div class="stat-change positive">
-                    <span>↑ 8%</span>
-                    <span style="color: var(--gray);">from yesterday</span>
-                </div>
+                <div class="stat-subtitle">Outstanding credits</div>
             </div>
 
             <div class="stat-card">
@@ -514,22 +579,16 @@
                     <div class="stat-icon" style="background: #fee2e2; color: #ef4444;">📤</div>
                 </div>
                 <div class="stat-value" style="color: var(--danger);" id="toPay">₹0</div>
-                <div class="stat-change negative">
-                    <span>↓ 3%</span>
-                    <span style="color: var(--gray);">vs last week</span>
-                </div>
+                <div class="stat-subtitle">Outstanding payments</div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-header">
-                    <span class="stat-title">This Month</span>
-                    <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;">📊</div>
+                    <span class="stat-title">Subscription</span>
+                    <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;">⭐</div>
                 </div>
-                <div class="stat-value" id="monthlyTotal">₹0</div>
-                <div class="stat-change positive">
-                    <span>↑ 15%</span>
-                    <span style="color: var(--gray);">vs last month</span>
-                </div>
+                <div class="stat-value" style="font-size: 1.5rem;" id="subscriptionStatus">Free</div>
+                <div class="stat-subtitle" id="subscriptionExpiry">No active plan</div>
             </div>
         </div>
 
@@ -542,45 +601,9 @@
                     <a href="#" class="card-action">View All →</a>
                 </div>
                 <div id="recentTransactions">
-                    <div class="transaction-item">
-                        <div class="transaction-info">
-                            <div class="transaction-avatar">RS</div>
-                            <div class="transaction-details">
-                                <h4>Rajesh Sharma</h4>
-                                <p>Today, 2:30 PM</p>
-                            </div>
-                        </div>
-                        <div class="transaction-amount credit">+₹5,000</div>
-                    </div>
-                    <div class="transaction-item">
-                        <div class="transaction-info">
-                            <div class="transaction-avatar">PK</div>
-                            <div class="transaction-details">
-                                <h4>Priya Kumar</h4>
-                                <p>Today, 11:15 AM</p>
-                            </div>
-                        </div>
-                        <div class="transaction-amount debit">-₹2,500</div>
-                    </div>
-                    <div class="transaction-item">
-                        <div class="transaction-info">
-                            <div class="transaction-avatar">AV</div>
-                            <div class="transaction-details">
-                                <h4>Amit Verma</h4>
-                                <p>Yesterday, 5:45 PM</p>
-                            </div>
-                        </div>
-                        <div class="transaction-amount credit">+₹12,000</div>
-                    </div>
-                    <div class="transaction-item">
-                        <div class="transaction-info">
-                            <div class="transaction-avatar">SK</div>
-                            <div class="transaction-details">
-                                <h4>Sunita Kapoor</h4>
-                                <p>Yesterday, 3:20 PM</p>
-                            </div>
-                        </div>
-                        <div class="transaction-amount credit">+₹8,500</div>
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Loading transactions...
                     </div>
                 </div>
             </div>
@@ -591,154 +614,347 @@
                     <h3 class="card-title">Quick Actions</h3>
                 </div>
                 <div class="quick-actions">
-                    <button class="action-btn" onclick="addTransaction()">
-                        <div class="action-icon">➕</div>
+                    <button class="action-btn" onclick="alert('Feature coming soon in mobile app!')">
+                        <div class="action-icon">📱</div>
                         <div>
-                            <div style="font-weight: 600;">New Transaction</div>
-                            <div style="font-size: 0.85rem; color: var(--gray);">Add credit/debit entry</div>
+                            <div style="font-weight: 600;">Download App</div>
+                            <div style="font-size: 0.85rem; color: var(--gray);">Get the mobile app</div>
                         </div>
                     </button>
-                    <button class="action-btn" onclick="sendReminder()">
-                        <div class="action-icon">📲</div>
-                        <div>
-                            <div style="font-weight: 600;">Send Reminder</div>
-                            <div style="font-size: 0.85rem; color: var(--gray);">WhatsApp/SMS payment link</div>
-                        </div>
-                    </button>
-                    <button class="action-btn" onclick="generateReport()">
+                    <button class="action-btn" onclick="alert('Feature coming soon!')">
                         <div class="action-icon">📄</div>
                         <div>
                             <div style="font-weight: 600;">Monthly Report</div>
                             <div style="font-size: 0.85rem; color: var(--gray);">Download PDF report</div>
                         </div>
                     </button>
-                    <button class="action-btn" onclick="voiceInput()">
-                        <div class="action-icon">🎤</div>
+                    <button class="action-btn" onclick="alert('Manage in mobile app!')">
+                        <div class="action-icon">⚙️</div>
                         <div>
-                            <div style="font-weight: 600;">Voice Entry</div>
-                            <div style="font-size: 0.85rem; color: var(--gray);">Add via voice command</div>
+                            <div style="font-weight: 600;">Settings</div>
+                            <div style="font-size: 0.85rem; color: var(--gray);">Update your profile</div>
+                        </div>
+                    </button>
+                    <button class="action-btn" onclick="alert('Upgrade in mobile app!')">
+                        <div class="action-icon">⭐</div>
+                        <div>
+                            <div style="font-weight: 600;">Upgrade Plan</div>
+                            <div style="font-size: 0.85rem; color: var(--gray);">Go premium</div>
                         </div>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Chart Section -->
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Transaction Trends</h3>
-                <select style="padding: 0.5rem; border-radius: 6px; border: 1px solid var(--gray-light);">
-                    <option>Last 7 days</option>
-                    <option>Last 30 days</option>
-                    <option>Last 3 months</option>
-                </select>
-            </div>
-            <div class="chart-placeholder">
-                📈 Chart will be displayed here (integrate Chart.js or similar)
-            </div>
-        </div>
-
         <!-- Top Customers -->
-        <div class="card" style="margin-top: 1.5rem;">
+        <div class="card">
             <div class="card-header">
                 <h3 class="card-title">Top Customers by Balance</h3>
                 <a href="#" class="card-action">View All →</a>
             </div>
-            <table class="customers-table">
-                <thead>
-                    <tr>
-                        <th>Customer</th>
-                        <th>Phone</th>
-                        <th>Balance</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Rajesh Sharma</strong></td>
-                        <td>+91 98765 43210</td>
-                        <td style="color: var(--secondary); font-weight: 600;">₹15,000</td>
-                        <td><span class="badge badge-success">To Receive</span></td>
-                        <td><a href="#" style="color: var(--primary);">Remind</a></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Amit Verma</strong></td>
-                        <td>+91 87654 32109</td>
-                        <td style="color: var(--secondary); font-weight: 600;">₹12,500</td>
-                        <td><span class="badge badge-success">To Receive</span></td>
-                        <td><a href="#" style="color: var(--primary);">Remind</a></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Sunita Kapoor</strong></td>
-                        <td>+91 76543 21098</td>
-                        <td style="color: var(--secondary); font-weight: 600;">₹9,800</td>
-                        <td><span class="badge badge-success">To Receive</span></td>
-                        <td><a href="#" style="color: var(--primary);">Remind</a></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Wholesale Traders</strong></td>
-                        <td>+91 65432 10987</td>
-                        <td style="color: var(--danger); font-weight: 600;">₹8,200</td>
-                        <td><span class="badge badge-danger">To Pay</span></td>
-                        <td><a href="#" style="color: var(--primary);">Pay</a></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div id="topCustomersContainer">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading customers...
+                </div>
+            </div>
         </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Initialize Supabase
-         const SUPABASE_URL = 'https://sugkhnmogoyunxbfzcnp.supabase.co';
+        // Initialize Supabase (REPLACE WITH YOUR CREDENTIALS)
+       const SUPABASE_URL = 'https://sugkhnmogoyunxbfzcnp.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1Z2tobm1vZ295dW54YmZ6Y25wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyNjIyMzYsImV4cCI6MjA3NTgzODIzNn0.xJ5Xlj4kD43CROsXOdrokWwqHZ01XtbUxJRfzwP6Lwg';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let currentUser = null;
 
         // Check authentication
         async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
+            try {
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+
+                if (error) throw error;
+
+                if (!session) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                currentUser = session.user;
+                await displayUserInfo();
+                await loadDashboardData();
+            } catch (error) {
+                console.error('Auth error:', error);
                 window.location.href = 'index.html';
-                return;
             }
-
-            // Display user info
-            const user = session.user;
-            const userName = user.user_metadata?.full_name || user.email.split('@')[0];
-            document.getElementById('userName').textContent = userName;
-            document.getElementById('userAvatar').textContent = userName.charAt(0).toUpperCase();
-
-            // Load dashboard data
-            loadDashboardData(user.id);
         }
 
-        // Load dashboard data from Supabase
-        async function loadDashboardData(userId) {
-            // Example: Fetch customers count
-            const { data: customers, error } = await supabase
-                .from('customers')
-                .select('*')
-                .eq('user_id', userId);
+        // Display user information
+        async function displayUserInfo() {
+            try {
+                // Get profile data
+                const { data: profile, error } = await supabaseClient
+                    .from('profiles')
+                    .select('full_name, business_name, phone_number')
+                    .eq('user_id', currentUser.id)
+                    .single();
 
-            if (!error && customers) {
-                document.getElementById('totalCustomers').textContent = customers.length;
+                const displayName = profile?.full_name || currentUser.email.split('@')[0];
+                const businessName = profile?.business_name || 'Your Business';
 
-                // Calculate balances (example logic)
+                document.getElementById('userName').textContent = displayName;
+                document.getElementById('userNameDisplay').textContent = displayName;
+                document.getElementById('userEmail').textContent = currentUser.email;
+                document.getElementById('userAvatar').textContent = displayName.charAt(0).toUpperCase();
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                document.getElementById('userName').textContent = currentUser.email.split('@')[0];
+                document.getElementById('userNameDisplay').textContent = currentUser.email;
+                document.getElementById('userEmail').textContent = currentUser.email;
+            }
+        }
+
+        // Load all dashboard data
+        async function loadDashboardData() {
+            await Promise.all([
+                loadStats(),
+                loadRecentTransactions(),
+                loadTopCustomers(),
+                loadSubscription()
+            ]);
+        }
+
+        // Load statistics
+        async function loadStats() {
+            try {
+                // Get all active customers
+                const { data: customers, error: customersError } = await supabaseClient
+                    .from('customers')
+                    .select('total_balance')
+                    .eq('user_id', currentUser.id)
+                    .eq('is_active', true);
+
+                if (customersError) throw customersError;
+
+                // Calculate totals
                 let toReceive = 0;
                 let toPay = 0;
 
                 customers.forEach(customer => {
-                    if (customer.balance > 0) {
-                        toReceive += customer.balance;
-                    } else {
-                        toPay += Math.abs(customer.balance);
+                    const balance = customer.total_balance || 0;
+                    if (balance > 0) {
+                        toReceive += balance;
+                    } else if (balance < 0) {
+                        toPay += Math.abs(balance);
                     }
                 });
 
+                // Update UI
+                document.getElementById('totalCustomers').textContent = customers.length;
                 document.getElementById('toReceive').textContent = `₹${toReceive.toLocaleString('en-IN')}`;
                 document.getElementById('toPay').textContent = `₹${toPay.toLocaleString('en-IN')}`;
+            } catch (error) {
+                console.error('Error loading stats:', error);
             }
+        }
+
+        // Load recent transactions
+        async function loadRecentTransactions() {
+            try {
+                const { data: transactions, error } = await supabaseClient
+                    .from('transactions')
+                    .select(`
+                        transaction_id,
+                        customer_id,
+                        type,
+                        amount,
+                        date,
+                        created_at
+                    `)
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                if (error) throw error;
+
+                // Get customer names
+                const customerIds = [...new Set(transactions.map(t => t.customer_id))];
+                const { data: customers } = await supabaseClient
+                    .from('customers')
+                    .select('customer_id, customer_name')
+                    .eq('user_id', currentUser.id)
+                    .in('customer_id', customerIds);
+
+                const customerMap = {};
+                customers?.forEach(c => {
+                    customerMap[c.customer_id] = c.customer_name;
+                });
+
+                const container = document.getElementById('recentTransactions');
+
+                if (transactions.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                            <p>No transactions yet</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = transactions.map(txn => {
+                    const customerName = customerMap[txn.customer_id] || 'Unknown';
+                    const initials = customerName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                    const dateStr = formatDate(txn.created_at);
+                    const amountClass = txn.type === 'CREDIT' ? 'credit' : 'payment';
+                    const amountPrefix = txn.type === 'CREDIT' ? '+' : '-';
+
+                    return `
+                        <div class="transaction-item">
+                            <div class="transaction-info">
+                                <div class="transaction-avatar">${initials}</div>
+                                <div class="transaction-details">
+                                    <h4>${customerName}</h4>
+                                    <p>${dateStr} • ${txn.type}</p>
+                                </div>
+                            </div>
+                            <div class="transaction-amount ${amountClass}">${amountPrefix}₹${txn.amount.toLocaleString('en-IN')}</div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                document.getElementById('recentTransactions').innerHTML = `
+                    <div class="empty-state">
+                        <p style="color: var(--danger);">Error loading transactions</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Load top customers
+        async function loadTopCustomers() {
+            try {
+                const { data: customers, error } = await supabaseClient
+                    .from('customers')
+                    .select('customer_name, phone_number, total_balance')
+                    .eq('user_id', currentUser.id)
+                    .eq('is_active', true)
+                    .order('total_balance', { ascending: false })
+                    .limit(5);
+
+                if (error) throw error;
+
+                const container = document.getElementById('topCustomersContainer');
+
+                if (customers.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">👥</div>
+                            <p>No customers yet</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = `
+                    <table class="customers-table">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Phone</th>
+                                <th>Balance</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${customers.map(customer => {
+                                const balance = customer.total_balance || 0;
+                                const balanceColor = balance > 0 ? 'var(--secondary)' : balance < 0 ? 'var(--danger)' : 'var(--gray)';
+                                const statusBadge = balance > 0 ? 'badge-success' : balance < 0 ? 'badge-danger' : 'badge-warning';
+                                const statusText = balance > 0 ? 'To Receive' : balance < 0 ? 'To Pay' : 'Settled';
+
+                                return `
+                                    <tr>
+                                        <td><strong>${customer.customer_name}</strong></td>
+                                        <td>${customer.phone_number || 'N/A'}</td>
+                                        <td style="color: ${balanceColor}; font-weight: 600;">₹${Math.abs(balance).toLocaleString('en-IN')}</td>
+                                        <td><span class="badge ${statusBadge}">${statusText}</span></td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (error) {
+                console.error('Error loading customers:', error);
+                document.getElementById('topCustomersContainer').innerHTML = `
+                    <div class="empty-state">
+                        <p style="color: var(--danger);">Error loading customers</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Load subscription status
+        async function loadSubscription() {
+            try {
+                const { data: subscription, error } = await supabaseClient
+                    .from('users_subscription')
+                    .select('subscription_status, subscription_end_date, plan_type')
+                    .eq('user_id', currentUser.id)
+                    .single();
+
+                if (error || !subscription) {
+                    document.getElementById('subscriptionStatus').textContent = 'Free';
+                    document.getElementById('subscriptionExpiry').textContent = 'No active plan';
+                    return;
+                }
+
+                const status = subscription.subscription_status || 'free';
+                const endDate = subscription.subscription_end_date;
+
+                if (status === 'free') {
+                    document.getElementById('subscriptionStatus').textContent = 'Free';
+                    document.getElementById('subscriptionExpiry').textContent = 'Upgrade to premium';
+                } else {
+                    const planName = subscription.plan_type || 'Premium';
+                    document.getElementById('subscriptionStatus').textContent = planName.charAt(0).toUpperCase() + planName.slice(1);
+
+                    if (endDate) {
+                        const expiry = new Date(endDate);
+                        const now = new Date();
+                        const isActive = expiry > now;
+
+                        if (isActive) {
+                            const daysLeft = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
+                            document.getElementById('subscriptionExpiry').textContent = `Expires in ${daysLeft} days`;
+                        } else {
+                            document.getElementById('subscriptionExpiry').textContent = 'Expired';
+                            document.getElementById('subscriptionStatus').textContent = 'Free';
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading subscription:', error);
+            }
+        }
+
+        // Helper: Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 0) return 'Today';
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays < 7) return `${diffDays} days ago`;
+
+            return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
         }
 
         // Display current date
@@ -748,26 +964,17 @@
             document.getElementById('currentDate').textContent = today;
         }
 
-        // Quick action functions
-        function addTransaction() {
-            alert('Opening transaction form...');
-        }
-
-        function sendReminder() {
-            alert('Opening reminder interface...');
-        }
-
-        function generateReport() {
-            alert('Generating monthly report...');
-        }
-
-        function voiceInput() {
-            alert('Starting voice input...');
-        }
-
+        // Logout
         async function logout() {
-            await supabase.auth.signOut();
-            window.location.href = 'index.html';
+            if (confirm('Are you sure you want to logout?')) {
+                await supabaseClient.auth.signOut();
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Toggle sidebar (mobile)
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
         }
 
         // Initialize
