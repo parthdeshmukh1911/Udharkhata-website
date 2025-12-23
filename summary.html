@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summary - UdharKhata Plus</title>
+    <link rel="stylesheet" href="dashboard-style.css">
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">📒 UdharKhata Plus</div>
+        <ul class="menu">
+            <li class="menu-item" onclick="location.href='dashboard.html'">
+                <span class="menu-icon">📊</span><span>Dashboard</span>
+            </li>
+            <li class="menu-item" onclick="location.href='customers.html'">
+                <span class="menu-icon">👥</span><span>Customers</span>
+            </li>
+            <li class="menu-item" onclick="location.href='transactions.html'">
+                <span class="menu-icon">💰</span><span>Transactions</span>
+            </li>
+            <li class="menu-item active">
+                <span class="menu-icon">📈</span><span>Summary</span>
+            </li>
+            <li class="menu-item" onclick="logout()">
+                <span class="menu-icon">🚪</span><span>Logout</span>
+            </li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="header-left">
+                <h1>Business Summary 📈</h1>
+                <p>Complete financial overview</p>
+            </div>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Total Customers</span>
+                    <div class="stat-icon" style="background: #dbeafe; color: #3b82f6;">👥</div>
+                </div>
+                <div class="stat-value" id="totalCustomers">0</div>
+                <div class="stat-subtitle">Active customers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Total Credit Given</span>
+                    <div class="stat-icon" style="background: #d1fae5; color: #10b981;">💰</div>
+                </div>
+                <div class="stat-value" style="color: var(--secondary);" id="totalCredit">₹0</div>
+                <div class="stat-subtitle">Money lent</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Total Payment Received</span>
+                    <div class="stat-icon" style="background: #fee2e2; color: #ef4444;">📥</div>
+                </div>
+                <div class="stat-value" style="color: var(--danger);" id="totalPayment">₹0</div>
+                <div class="stat-subtitle">Money received</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Net Outstanding</span>
+                    <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;">📊</div>
+                </div>
+                <div class="stat-value" id="netOutstanding">₹0</div>
+                <div class="stat-subtitle">Credit - Payment</div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 2rem;">
+            <div class="card-header">
+                <h3 class="card-title">Summary Statistics</h3>
+            </div>
+            <div id="summaryTable">
+                <div class="loading"><div class="spinner"></div>Loading summary...</div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 2rem;">
+            <div class="card-header">
+                <h3 class="card-title">Top Outstanding Customers</h3>
+            </div>
+            <div id="topCustomers">
+                <div class="loading"><div class="spinner"></div>Loading customers...</div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="dashboard-script.js"></script>
+</body>
+</html>

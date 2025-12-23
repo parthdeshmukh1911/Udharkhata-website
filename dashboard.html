@@ -509,27 +509,23 @@
     <aside class="sidebar" id="sidebar">
         <div class="logo">📒 UdharKhata Plus</div>
         <ul class="menu">
-            <li class="menu-item active" style="cursor: pointer;">
+            <li class="menu-item active">
                 <span class="menu-icon">📊</span>
                 <span>Dashboard</span>
             </li>
-            <li class="menu-item" style="cursor: pointer;" onclick="alert('Download mobile app to manage customers')">
+            <li class="menu-item" onclick="location.href='customers.html'">
                 <span class="menu-icon">👥</span>
                 <span>Customers</span>
             </li>
-            <li class="menu-item" style="cursor: pointer;" onclick="alert('Download mobile app to manage transactions')">
+            <li class="menu-item" onclick="location.href='transactions.html'">
                 <span class="menu-icon">💰</span>
                 <span>Transactions</span>
             </li>
-            <li class="menu-item" style="cursor: pointer;" onclick="alert('Download mobile app to view reports')">
+            <li class="menu-item" onclick="location.href='summary.html'">
                 <span class="menu-icon">📈</span>
-                <span>Reports</span>
+                <span>Summary</span>
             </li>
-            <li class="menu-item" style="cursor: pointer;" onclick="alert('Download mobile app to manage settings')">
-                <span class="menu-icon">⚙️</span>
-                <span>Settings</span>
-            </li>
-            <li class="menu-item" style="cursor: pointer;" onclick="logout()">
+            <li class="menu-item" onclick="logout()">
                 <span class="menu-icon">🚪</span>
                 <span>Logout</span>
             </li>
@@ -598,7 +594,7 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Recent Transactions</h3>
-                    <a href="#" class="card-action">View All →</a>
+                    <a href="transactions.html" class="card-action">View All →</a>
                 </div>
                 <div id="recentTransactions">
                     <div class="loading">
@@ -650,7 +646,7 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">Top Customers by Balance</h3>
-                <a href="#" class="card-action">View All →</a>
+                <a href="customers.html" class="card-action">View All →</a>
             </div>
             <div id="topCustomersContainer">
                 <div class="loading">

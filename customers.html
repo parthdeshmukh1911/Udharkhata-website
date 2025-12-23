@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customers - UdharKhata Plus</title>
+    <link rel="stylesheet" href="dashboard-style.css">
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">📒 UdharKhata Plus</div>
+        <ul class="menu">
+            <li class="menu-item" onclick="location.href='dashboard.html'">
+                <span class="menu-icon">📊</span><span>Dashboard</span>
+            </li>
+            <li class="menu-item active">
+                <span class="menu-icon">👥</span><span>Customers</span>
+            </li>
+            <li class="menu-item" onclick="location.href='transactions.html'">
+                <span class="menu-icon">💰</span><span>Transactions</span>
+            </li>
+            <li class="menu-item" onclick="location.href='summary.html'">
+                <span class="menu-icon">📈</span><span>Summary</span>
+            </li>
+            <li class="menu-item" onclick="logout()">
+                <span class="menu-icon">🚪</span><span>Logout</span>
+            </li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="header-left">
+                <h1>Customers 👥</h1>
+                <p>Manage all your customers</p>
+            </div>
+        </header>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">All Customers</h3>
+                <input type="text" id="searchInput" placeholder="Search customers..." style="padding: 0.5rem 1rem; border: 2px solid var(--light); border-radius: 8px;">
+            </div>
+            <div id="customersContainer">
+                <div class="loading"><div class="spinner"></div>Loading customers...</div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="dashboard-script.js"></script>
+</body>
+</html>
