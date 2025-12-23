@@ -610,11 +610,11 @@
 
             <div class="stat-card">
                 <div class="stat-header">
-                    <span class="stat-title">Total Outstanding</span>
-                    <div class="stat-icon" style="background: #fee2e2; color: #ef4444;">💳</div>
+                    <span class="stat-title">Average Outstanding</span>
+                    <div class="stat-icon" style="background: #fee2e2; color: #ef4444;">📊</div>
                 </div>
-                <div class="stat-value" style="color: var(--danger);" id="totalOutstanding">₹0</div>
-                <div class="stat-subtitle">Sum of all balances</div>
+                <div class="stat-value" style="color: var(--danger);" id="avgOutstanding">₹0</div>
+                <div class="stat-subtitle">Per customer with credit</div>
             </div>
 
             <div class="stat-card">
@@ -649,11 +649,11 @@
                     <h3 class="card-title">Quick Actions</h3>
                 </div>
                 <div class="quick-actions">
-                    <button class="action-btn" onclick="alert('Feature coming soon in mobile app!')">
+                    <button class="action-btn" onclick="alert('APK download link will be added here. Please check APK_SETUP.md for instructions.')">
                         <div class="action-icon">📱</div>
                         <div>
                             <div style="font-weight: 600;">Download App</div>
-                            <div style="font-size: 0.85rem; color: var(--gray);">Get the mobile app</div>
+                            <div style="font-size: 0.85rem; color: var(--gray);">Get Android APK</div>
                         </div>
                     </button>
                     <button class="action-btn" onclick="alert('Feature coming soon!')">
@@ -818,6 +818,8 @@
                     }
                 });
 
+                const avgOutstanding = customersWithCredit > 0 ? totalOutstanding / customersWithCredit : 0;
+
                 // Update UI
                 document.getElementById('totalCustomers').textContent = customers.length;
                 document.getElementById('totalCredit').textContent = `₹${totalCredit.toLocaleString('en-IN', {maximumFractionDigits: 0})}`;
@@ -825,7 +827,7 @@
                 document.getElementById('netOutstanding').textContent = `₹${netOutstanding.toLocaleString('en-IN', {maximumFractionDigits: 0})}`;
                 document.getElementById('customersWithCredit').textContent = customersWithCredit;
                 document.getElementById('settledCustomers').textContent = settledCustomers;
-                document.getElementById('totalOutstanding').textContent = `₹${totalOutstanding.toLocaleString('en-IN', {maximumFractionDigits: 0})}`;
+                document.getElementById('avgOutstanding').textContent = `₹${avgOutstanding.toLocaleString('en-IN', {maximumFractionDigits: 0})}`;
             } catch (error) {
                 console.error('Error loading stats:', error);
             }
