@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - UdharKhata Plus</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --gray: #64748b;
+            --gray-light: #cbd5e1;
+            --light: #f1f5f9;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: var(--white);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 2rem 0;
+            overflow-y: auto;
+            transition: transform 0.3s;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            padding: 0 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .menu {
+            list-style: none;
+        }
+
+        .menu-item {
+            padding: 0.75rem 1.5rem;
+            margin: 0.25rem 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--gray);
+            text-decoration: none;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: var(--light);
+            color: var(--primary);
+            border-right: 3px solid var(--primary);
+        }
+
+        .menu-icon {
+            font-size: 1.25rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .header-left h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .header-left p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-title {
+            font-size: 0.875rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .stat-change.positive {
+            color: var(--secondary);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--light);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .card-action {
+            color: var(--primary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        /* Recent Transactions */
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--light);
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .transaction-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .transaction-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .transaction-details h4 {
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .transaction-details p {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .transaction-amount {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .transaction-amount.credit {
+            color: var(--secondary);
+        }
+
+        .transaction-amount.debit {
+            color: var(--danger);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background: var(--light);
+            padding: 1rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+            text-align: left;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateX(5px);
+        }
+
+        .action-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .action-btn:hover .action-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Chart Placeholder */
+        .chart-placeholder {
+            height: 250px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.1rem;
+        }
+
+        /* Customers Table */
+        .customers-table {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .customers-table th {
+            text-align: left;
+            padding: 0.75rem;
+            background: var(--light);
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        .customers-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--light);
+        }
+
+        .customers-table tr:hover {
+            background: var(--light);
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: var(--secondary);
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">📒 UdharKhata Plus</div>
+        <ul class="menu">
+            <li class="menu-item active">
+                <span class="menu-icon">📊</span>
+                <span>Dashboard</span>
+            </li>
+            <li class="menu-item">
+                <span class="menu-icon">👥</span>
+                <span>Customers</span>
+            </li>
+            <li class="menu-item">
+                <span class="menu-icon">💰</span>
+                <span>Transactions</span>
+            </li>
+            <li class="menu-item">
+                <span class="menu-icon">📈</span>
+                <span>Reports</span>
+            </li>
+            <li class="menu-item">
+                <span class="menu-icon">💬</span>
+                <span>Reminders</span>
+            </li>
+            <li class="menu-item">
+                <span class="menu-icon">⚙️</span>
+                <span>Settings</span>
+            </li>
+            <li class="menu-item" onclick="logout()">
+                <span class="menu-icon">🚪</span>
+                <span>Logout</span>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1>Welcome back, <span id="userName">User</span>! 👋</h1>
+                <p id="currentDate"></p>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" onclick="addTransaction()">
+                    <span>➕</span> Add Transaction
+                </button>
+                <div class="user-avatar" id="userAvatar">U</div>
+            </div>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Total Customers</span>
+                    <div class="stat-icon" style="background: #dbeafe; color: #3b82f6;">👥</div>
+                </div>
+                <div class="stat-value" id="totalCustomers">0</div>
+                <div class="stat-change positive">
+                    <span>↑ 12%</span>
+                    <span style="color: var(--gray);">vs last month</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Money to Receive</span>
+                    <div class="stat-icon" style="background: #d1fae5; color: #10b981;">💰</div>
+                </div>
+                <div class="stat-value" style="color: var(--secondary);" id="toReceive">₹0</div>
+                <div class="stat-change positive">
+                    <span>↑ 8%</span>
+                    <span style="color: var(--gray);">from yesterday</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Money to Pay</span>
+                    <div class="stat-icon" style="background: #fee2e2; color: #ef4444;">📤</div>
+                </div>
+                <div class="stat-value" style="color: var(--danger);" id="toPay">₹0</div>
+                <div class="stat-change negative">
+                    <span>↓ 3%</span>
+                    <span style="color: var(--gray);">vs last week</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">This Month</span>
+                    <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;">📊</div>
+                </div>
+                <div class="stat-value" id="monthlyTotal">₹0</div>
+                <div class="stat-change positive">
+                    <span>↑ 15%</span>
+                    <span style="color: var(--gray);">vs last month</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Recent Transactions -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Recent Transactions</h3>
+                    <a href="#" class="card-action">View All →</a>
+                </div>
+                <div id="recentTransactions">
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="transaction-avatar">RS</div>
+                            <div class="transaction-details">
+                                <h4>Rajesh Sharma</h4>
+                                <p>Today, 2:30 PM</p>
+                            </div>
+                        </div>
+                        <div class="transaction-amount credit">+₹5,000</div>
+                    </div>
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="transaction-avatar">PK</div>
+                            <div class="transaction-details">
+                                <h4>Priya Kumar</h4>
+                                <p>Today, 11:15 AM</p>
+                            </div>
+                        </div>
+                        <div class="transaction-amount debit">-₹2,500</div>
+                    </div>
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="transaction-avatar">AV</div>
+                            <div class="transaction-details">
+                                <h4>Amit Verma</h4>
+                                <p>Yesterday, 5:45 PM</p>
+                            </div>
+                        </div>
+                        <div class="transaction-amount credit">+₹12,000</div>
+                    </div>
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="transaction-avatar">SK</div>
+                            <div class="transaction-details">
+                                <h4>Sunita Kapoor</h4>
+                                <p>Yesterday, 3:20 PM</p>
+                            </div>
+                        </div>
+                        <div class="transaction-amount credit">+₹8,500</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Quick Actions</h3>
+                </div>
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="addTransaction()">
+                        <div class="action-icon">➕</div>
+                        <div>
+                            <div style="font-weight: 600;">New Transaction</div>
+                            <div style="font-size: 0.85rem; color: var(--gray);">Add credit/debit entry</div>
+                        </div>
+                    </button>
+                    <button class="action-btn" onclick="sendReminder()">
+                        <div class="action-icon">📲</div>
+                        <div>
+                            <div style="font-weight: 600;">Send Reminder</div>
+                            <div style="font-size: 0.85rem; color: var(--gray);">WhatsApp/SMS payment link</div>
+                        </div>
+                    </button>
+                    <button class="action-btn" onclick="generateReport()">
+                        <div class="action-icon">📄</div>
+                        <div>
+                            <div style="font-weight: 600;">Monthly Report</div>
+                            <div style="font-size: 0.85rem; color: var(--gray);">Download PDF report</div>
+                        </div>
+                    </button>
+                    <button class="action-btn" onclick="voiceInput()">
+                        <div class="action-icon">🎤</div>
+                        <div>
+                            <div style="font-weight: 600;">Voice Entry</div>
+                            <div style="font-size: 0.85rem; color: var(--gray);">Add via voice command</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Transaction Trends</h3>
+                <select style="padding: 0.5rem; border-radius: 6px; border: 1px solid var(--gray-light);">
+                    <option>Last 7 days</option>
+                    <option>Last 30 days</option>
+                    <option>Last 3 months</option>
+                </select>
+            </div>
+            <div class="chart-placeholder">
+                📈 Chart will be displayed here (integrate Chart.js or similar)
+            </div>
+        </div>
+
+        <!-- Top Customers -->
+        <div class="card" style="margin-top: 1.5rem;">
+            <div class="card-header">
+                <h3 class="card-title">Top Customers by Balance</h3>
+                <a href="#" class="card-action">View All →</a>
+            </div>
+            <table class="customers-table">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Phone</th>
+                        <th>Balance</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Rajesh Sharma</strong></td>
+                        <td>+91 98765 43210</td>
+                        <td style="color: var(--secondary); font-weight: 600;">₹15,000</td>
+                        <td><span class="badge badge-success">To Receive</span></td>
+                        <td><a href="#" style="color: var(--primary);">Remind</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Amit Verma</strong></td>
+                        <td>+91 87654 32109</td>
+                        <td style="color: var(--secondary); font-weight: 600;">₹12,500</td>
+                        <td><span class="badge badge-success">To Receive</span></td>
+                        <td><a href="#" style="color: var(--primary);">Remind</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sunita Kapoor</strong></td>
+                        <td>+91 76543 21098</td>
+                        <td style="color: var(--secondary); font-weight: 600;">₹9,800</td>
+                        <td><span class="badge badge-success">To Receive</span></td>
+                        <td><a href="#" style="color: var(--primary);">Remind</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Wholesale Traders</strong></td>
+                        <td>+91 65432 10987</td>
+                        <td style="color: var(--danger); font-weight: 600;">₹8,200</td>
+                        <td><span class="badge badge-danger">To Pay</span></td>
+                        <td><a href="#" style="color: var(--primary);">Pay</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Supabase
+         const SUPABASE_URL = 'https://sugkhnmogoyunxbfzcnp.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1Z2tobm1vZ295dW54YmZ6Y25wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyNjIyMzYsImV4cCI6MjA3NTgzODIzNn0.xJ5Xlj4kD43CROsXOdrokWwqHZ01XtbUxJRfzwP6Lwg';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Check authentication
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Display user info
+            const user = session.user;
+            const userName = user.user_metadata?.full_name || user.email.split('@')[0];
+            document.getElementById('userName').textContent = userName;
+            document.getElementById('userAvatar').textContent = userName.charAt(0).toUpperCase();
+
+            // Load dashboard data
+            loadDashboardData(user.id);
+        }
+
+        // Load dashboard data from Supabase
+        async function loadDashboardData(userId) {
+            // Example: Fetch customers count
+            const { data: customers, error } = await supabase
+                .from('customers')
+                .select('*')
+                .eq('user_id', userId);
+
+            if (!error && customers) {
+                document.getElementById('totalCustomers').textContent = customers.length;
+
+                // Calculate balances (example logic)
+                let toReceive = 0;
+                let toPay = 0;
+
+                customers.forEach(customer => {
+                    if (customer.balance > 0) {
+                        toReceive += customer.balance;
+                    } else {
+                        toPay += Math.abs(customer.balance);
+                    }
+                });
+
+                document.getElementById('toReceive').textContent = `₹${toReceive.toLocaleString('en-IN')}`;
+                document.getElementById('toPay').textContent = `₹${toPay.toLocaleString('en-IN')}`;
+            }
+        }
+
+        // Display current date
+        function displayDate() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date().toLocaleDateString('en-IN', options);
+            document.getElementById('currentDate').textContent = today;
+        }
+
+        // Quick action functions
+        function addTransaction() {
+            alert('Opening transaction form...');
+        }
+
+        function sendReminder() {
+            alert('Opening reminder interface...');
+        }
+
+        function generateReport() {
+            alert('Generating monthly report...');
+        }
+
+        function voiceInput() {
+            alert('Starting voice input...');
+        }
+
+        async function logout() {
+            await supabase.auth.signOut();
+            window.location.href = 'index.html';
+        }
+
+        // Initialize
+        displayDate();
+        checkAuth();
+    </script>
+</body>
+</html>
