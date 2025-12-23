@@ -580,6 +580,45 @@
 
             <div class="stat-card">
                 <div class="stat-header">
+                    <span class="stat-title">Net Outstanding</span>
+                    <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;">📊</div>
+                </div>
+                <div class="stat-value" style="color: var(--warning);" id="netOutstanding">₹0</div>
+                <div class="stat-subtitle">Credit - Payment</div>
+            </div>
+        </div>
+
+        <!-- Additional Summary Stats -->
+        <div class="stats-grid" style="margin-top: 1rem;">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Customers with Credit</span>
+                    <div class="stat-icon" style="background: #dbeafe; color: #3b82f6;">👤</div>
+                </div>
+                <div class="stat-value" id="customersWithCredit">0</div>
+                <div class="stat-subtitle">Have outstanding balance</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Settled Customers</span>
+                    <div class="stat-icon" style="background: #d1fae5; color: #10b981;">✓</div>
+                </div>
+                <div class="stat-value" id="settledCustomers">0</div>
+                <div class="stat-subtitle">Zero balance</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Total Outstanding</span>
+                    <div class="stat-icon" style="background: #fee2e2; color: #ef4444;">💳</div>
+                </div>
+                <div class="stat-value" style="color: var(--danger);" id="totalOutstanding">₹0</div>
+                <div class="stat-subtitle">Sum of all balances</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
                     <span class="stat-title">Subscription</span>
                     <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;">⭐</div>
                 </div>
@@ -756,10 +795,37 @@
                     }
                 });
 
+                const netOutstanding = totalCredit - totalPayment;
+
+                // Get customer balances for additional stats
+                const { data: customerBalances } = await supabaseClient
+                    .from('customers')
+                    .select('total_balance')
+                    .eq('user_id', currentUser.id)
+                    .eq('is_active', true);
+
+                let customersWithCredit = 0;
+                let settledCustomers = 0;
+                let totalOutstanding = 0;
+
+                customerBalances?.forEach(c => {
+                    const balance = parseFloat(c.total_balance) || 0;
+                    if (balance > 0) {
+                        customersWithCredit++;
+                        totalOutstanding += balance;
+                    } else if (balance === 0) {
+                        settledCustomers++;
+                    }
+                });
+
                 // Update UI
                 document.getElementById('totalCustomers').textContent = customers.length;
                 document.getElementById('totalCredit').textContent = `₹${totalCredit.toLocaleString('en-IN', {maximumFractionDigits: 0})}`;
                 document.getElementById('totalPayment').textContent = `₹${totalPayment.toLocaleString('en-IN', {maximumFractionDigits: 0})}`;
+                document.getElementById('netOutstanding').textContent = `₹${netOutstanding.toLocaleString('en-IN', {maximumFractionDigits: 0})}`;
+                document.getElementById('customersWithCredit').textContent = customersWithCredit;
+                document.getElementById('settledCustomers').textContent = settledCustomers;
+                document.getElementById('totalOutstanding').textContent = `₹${totalOutstanding.toLocaleString('en-IN', {maximumFractionDigits: 0})}`;
             } catch (error) {
                 console.error('Error loading stats:', error);
             }
