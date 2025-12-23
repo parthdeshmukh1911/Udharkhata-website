@@ -470,35 +470,6 @@
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
             </form>
-            <div class="form-footer">
-                Don't have an account? <a href="#" onclick="openSignupModal()">Sign up</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Signup Modal -->
-    <div id="signupModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeSignupModal()">&times;</span>
-            <h2>Create Account</h2>
-            <form id="signupForm">
-                <div class="form-group">
-                    <label for="signup-name">Full Name</label>
-                    <input type="text" id="signup-name" required placeholder="Enter your name">
-                </div>
-                <div class="form-group">
-                    <label for="signup-email">Email</label>
-                    <input type="email" id="signup-email" required placeholder="Enter your email">
-                </div>
-                <div class="form-group">
-                    <label for="signup-password">Password</label>
-                    <input type="password" id="signup-password" required placeholder="Create a password">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Sign Up</button>
-            </form>
-            <div class="form-footer">
-                Already have an account? <a href="#" onclick="openLoginModal()">Login</a>
-            </div>
         </div>
     </div>
 
@@ -513,20 +484,10 @@
         // Modal functions
         function openLoginModal() {
             document.getElementById('loginModal').classList.add('active');
-            closeSignupModal();
         }
 
         function closeLoginModal() {
             document.getElementById('loginModal').classList.remove('active');
-        }
-
-        function openSignupModal() {
-            document.getElementById('signupModal').classList.add('active');
-            closeLoginModal();
-        }
-
-        function closeSignupModal() {
-            document.getElementById('signupModal').classList.remove('active');
         }
 
         // Login form handler
@@ -551,40 +512,6 @@
                 submitBtn.disabled = false;
             } else {
                 window.location.href = 'dashboard.html';
-            }
-        });
-
-        // Signup form handler
-        document.getElementById('signupForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = 'Creating account...';
-            submitBtn.disabled = true;
-
-            const name = document.getElementById('signup-name').value;
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-
-            const { data, error } = await supabaseClient.auth.signUp({
-                email: email,
-                password: password,
-                options: {
-                    data: {
-                        full_name: name,
-                    },
-                    emailRedirectTo: window.location.origin + '/dashboard.html'
-                }
-            });
-
-            if (error) {
-                alert('Signup failed: ' + error.message);
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
-            } else {
-                alert('Account created successfully! You can now login.');
-                closeSignupModal();
-                openLoginModal();
             }
         });
 
