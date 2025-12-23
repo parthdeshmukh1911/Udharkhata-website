@@ -507,7 +507,8 @@
         // Initialize Supabase
         const SUPABASE_URL = 'https://sugkhnmogoyunxbfzcnp.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1Z2tobm1vZ295dW54YmZ6Y25wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyNjIyMzYsImV4cCI6MjA3NTgzODIzNn0.xJ5Xlj4kD43CROsXOdrokWwqHZ01XtbUxJRfzwP6Lwg';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // Modal functions
         function openLoginModal() {
@@ -531,16 +532,23 @@
         // Login form handler
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Logging in...';
+            submitBtn.disabled = true;
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            const { data, error } = await supabase.auth.signInWithPassword({
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
                 email: email,
                 password: password,
             });
 
             if (error) {
                 alert('Login failed: ' + error.message);
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
             } else {
                 window.location.href = 'dashboard.html';
             }
@@ -549,34 +557,51 @@
         // Signup form handler
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Creating account...';
+            submitBtn.disabled = true;
+
             const name = document.getElementById('signup-name').value;
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
 
-            const { data, error } = await supabase.auth.signUp({
+            const { data, error } = await supabaseClient.auth.signUp({
                 email: email,
                 password: password,
                 options: {
                     data: {
                         full_name: name,
-                    }
+                    },
+                    emailRedirectTo: window.location.origin + '/dashboard.html'
                 }
             });
 
             if (error) {
                 alert('Signup failed: ' + error.message);
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
             } else {
-                alert('Account created! Please check your email to verify.');
+                alert('Account created successfully! You can now login.');
+                closeSignupModal();
                 openLoginModal();
             }
         });
 
         // Check if user is already logged in
-        supabase.auth.onAuthStateChange((event, session) => {
-            if (session) {
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (session && event === 'SIGNED_IN') {
                 window.location.href = 'dashboard.html';
             }
         });
+
+        // Check session on page load
+        (async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                window.location.href = 'dashboard.html';
+            }
+        })();
     </script>
 </body>
 </html>
