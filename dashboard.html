@@ -31,6 +31,27 @@
             color: var(--dark);
         }
 
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.25rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-toggle:hover {
+            background: var(--primary-dark);
+        }
+
         /* Sidebar */
         .sidebar {
             position: fixed;
@@ -144,6 +165,31 @@
             color: var(--white);
             font-weight: 600;
             cursor: pointer;
+        }
+
+        .logout-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--danger);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .logout-btn::before {
+            content: '🚪';
+            font-size: 1.1rem;
         }
 
         .btn {
@@ -452,6 +498,22 @@
             margin-bottom: 1rem;
         }
 
+        /* Sidebar Overlay for Mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .dashboard-grid {
@@ -460,6 +522,10 @@
         }
 
         @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
             .sidebar {
                 transform: translateX(-100%);
             }
@@ -470,6 +536,8 @@
 
             .main-content {
                 margin-left: 0;
+                padding: 1rem;
+                padding-top: 4rem;
             }
 
             .stats-grid {
@@ -479,31 +547,32 @@
             .header {
                 flex-direction: column;
                 gap: 1rem;
+                align-items: flex-start;
             }
 
-            .menu-toggle {
-                display: block;
-                position: fixed;
-                top: 1rem;
-                left: 1rem;
-                z-index: 1001;
-                background: var(--primary);
-                color: white;
-                border: none;
-                padding: 0.75rem;
-                border-radius: 8px;
-                cursor: pointer;
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
             }
-        }
 
-        .menu-toggle {
-            display: none;
+            .user-info {
+                margin-right: 0;
+                text-align: left;
+            }
+
+            .logout-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
     <!-- Mobile Menu Toggle -->
-    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰ Menu</button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
@@ -699,8 +768,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Initialize Supabase (REPLACE WITH YOUR CREDENTIALS)
-       const SUPABASE_URL = 'https://sugkhnmogoyunxbfzcnp.supabase.co';
+        // Initialize Supabase
+        const SUPABASE_URL = 'https://sugkhnmogoyunxbfzcnp.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1Z2tobm1vZ295dW54YmZ6Y25wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyNjIyMzYsImV4cCI6MjA3NTgzODIzNn0.xJ5Xlj4kD43CROsXOdrokWwqHZ01XtbUxJRfzwP6Lwg';
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -731,7 +800,6 @@
         // Display user information
         async function displayUserInfo() {
             try {
-                // Get profile data
                 const { data: profile, error } = await supabaseClient
                     .from('profiles')
                     .select('full_name, business_name, phone_number')
@@ -739,7 +807,6 @@
                     .single();
 
                 const displayName = profile?.full_name || currentUser.email.split('@')[0];
-                const businessName = profile?.business_name || 'Your Business';
 
                 document.getElementById('userName').textContent = displayName;
                 document.getElementById('userNameDisplay').textContent = displayName;
@@ -766,7 +833,6 @@
         // Load statistics
         async function loadStats() {
             try {
-                // Get all active customers count
                 const { data: customers, error: customersError } = await supabaseClient
                     .from('customers')
                     .select('customer_id')
@@ -775,7 +841,6 @@
 
                 if (customersError) throw customersError;
 
-                // Get all transactions to calculate totals
                 const { data: transactions, error: txnError } = await supabaseClient
                     .from('transactions')
                     .select('type, amount')
@@ -783,7 +848,6 @@
 
                 if (txnError) throw txnError;
 
-                // Calculate totals from transactions
                 let totalCredit = 0;
                 let totalPayment = 0;
 
@@ -798,7 +862,6 @@
 
                 const netOutstanding = totalCredit - totalPayment;
 
-                // Get customer balances for additional stats
                 const { data: customerBalances } = await supabaseClient
                     .from('customers')
                     .select('total_balance')
@@ -821,7 +884,6 @@
 
                 const avgOutstanding = customersWithCredit > 0 ? totalOutstanding / customersWithCredit : 0;
 
-                // Update UI
                 document.getElementById('totalCustomers').textContent = customers.length;
                 document.getElementById('totalCredit').textContent = `₹${totalCredit.toLocaleString('en-IN', {maximumFractionDigits: 0})}`;
                 document.getElementById('totalPayment').textContent = `₹${totalPayment.toLocaleString('en-IN', {maximumFractionDigits: 0})}`;
@@ -839,21 +901,13 @@
             try {
                 const { data: transactions, error } = await supabaseClient
                     .from('transactions')
-                    .select(`
-                        transaction_id,
-                        customer_id,
-                        type,
-                        amount,
-                        date,
-                        created_at
-                    `)
+                    .select('transaction_id, customer_id, type, amount, date, created_at')
                     .eq('user_id', currentUser.id)
                     .order('created_at', { ascending: false })
                     .limit(5);
 
                 if (error) throw error;
 
-                // Get customer names
                 const customerIds = [...new Set(transactions.map(t => t.customer_id))];
                 const { data: customers } = await supabaseClient
                     .from('customers')
@@ -869,12 +923,7 @@
                 const container = document.getElementById('recentTransactions');
 
                 if (transactions.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-state-icon">📭</div>
-                            <p>No transactions yet</p>
-                        </div>
-                    `;
+                    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No transactions yet</p></div>';
                     return;
                 }
 
@@ -900,11 +949,7 @@
                 }).join('');
             } catch (error) {
                 console.error('Error loading transactions:', error);
-                document.getElementById('recentTransactions').innerHTML = `
-                    <div class="empty-state">
-                        <p style="color: var(--danger);">Error loading transactions</p>
-                    </div>
-                `;
+                document.getElementById('recentTransactions').innerHTML = '<div class="empty-state"><p style="color: var(--danger);">Error loading transactions</p></div>';
             }
         }
 
@@ -924,12 +969,7 @@
                 const container = document.getElementById('topCustomersContainer');
 
                 if (customers.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-state-icon">👥</div>
-                            <p>No customers yet</p>
-                        </div>
-                    `;
+                    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><p>No customers yet</p></div>';
                     return;
                 }
 
@@ -964,11 +1004,7 @@
                 `;
             } catch (error) {
                 console.error('Error loading customers:', error);
-                document.getElementById('topCustomersContainer').innerHTML = `
-                    <div class="empty-state">
-                        <p style="color: var(--danger);">Error loading customers</p>
-                    </div>
-                `;
+                document.getElementById('topCustomersContainer').innerHTML = '<div class="empty-state"><p style="color: var(--danger);">Error loading customers</p></div>';
             }
         }
 
@@ -1048,6 +1084,13 @@
         // Toggle sidebar (mobile)
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+
+        // Close sidebar
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('active');
         }
 
         // Initialize
