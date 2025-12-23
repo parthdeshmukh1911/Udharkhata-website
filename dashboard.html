@@ -509,27 +509,27 @@
     <aside class="sidebar" id="sidebar">
         <div class="logo">📒 UdharKhata Plus</div>
         <ul class="menu">
-            <li class="menu-item active">
+            <li class="menu-item active" style="cursor: pointer;">
                 <span class="menu-icon">📊</span>
                 <span>Dashboard</span>
             </li>
-            <li class="menu-item">
+            <li class="menu-item" style="cursor: pointer;" onclick="alert('Download mobile app to manage customers')">
                 <span class="menu-icon">👥</span>
                 <span>Customers</span>
             </li>
-            <li class="menu-item">
+            <li class="menu-item" style="cursor: pointer;" onclick="alert('Download mobile app to manage transactions')">
                 <span class="menu-icon">💰</span>
                 <span>Transactions</span>
             </li>
-            <li class="menu-item">
+            <li class="menu-item" style="cursor: pointer;" onclick="alert('Download mobile app to view reports')">
                 <span class="menu-icon">📈</span>
                 <span>Reports</span>
             </li>
-            <li class="menu-item">
+            <li class="menu-item" style="cursor: pointer;" onclick="alert('Download mobile app to manage settings')">
                 <span class="menu-icon">⚙️</span>
                 <span>Settings</span>
             </li>
-            <li class="menu-item" onclick="logout()">
+            <li class="menu-item" style="cursor: pointer;" onclick="logout()">
                 <span class="menu-icon">🚪</span>
                 <span>Logout</span>
             </li>
@@ -566,20 +566,20 @@
 
             <div class="stat-card">
                 <div class="stat-header">
-                    <span class="stat-title">Money to Receive</span>
+                    <span class="stat-title">Total Credit Given</span>
                     <div class="stat-icon" style="background: #d1fae5; color: #10b981;">💰</div>
                 </div>
-                <div class="stat-value" style="color: var(--secondary);" id="toReceive">₹0</div>
-                <div class="stat-subtitle">Outstanding credits</div>
+                <div class="stat-value" style="color: var(--secondary);" id="totalCredit">₹0</div>
+                <div class="stat-subtitle">Money lent to customers</div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-header">
-                    <span class="stat-title">Money to Pay</span>
-                    <div class="stat-icon" style="background: #fee2e2; color: #ef4444;">📤</div>
+                    <span class="stat-title">Total Payment Received</span>
+                    <div class="stat-icon" style="background: #fee2e2; color: #ef4444;">📥</div>
                 </div>
-                <div class="stat-value" style="color: var(--danger);" id="toPay">₹0</div>
-                <div class="stat-subtitle">Outstanding payments</div>
+                <div class="stat-value" style="color: var(--danger);" id="totalPayment">₹0</div>
+                <div class="stat-subtitle">Money received back</div>
             </div>
 
             <div class="stat-card">
@@ -730,32 +730,40 @@
         // Load statistics
         async function loadStats() {
             try {
-                // Get all active customers
+                // Get all active customers count
                 const { data: customers, error: customersError } = await supabaseClient
                     .from('customers')
-                    .select('total_balance')
+                    .select('customer_id')
                     .eq('user_id', currentUser.id)
                     .eq('is_active', true);
 
                 if (customersError) throw customersError;
 
-                // Calculate totals
-                let toReceive = 0;
-                let toPay = 0;
+                // Get all transactions to calculate totals
+                const { data: transactions, error: txnError } = await supabaseClient
+                    .from('transactions')
+                    .select('type, amount')
+                    .eq('user_id', currentUser.id);
 
-                customers.forEach(customer => {
-                    const balance = customer.total_balance || 0;
-                    if (balance > 0) {
-                        toReceive += balance;
-                    } else if (balance < 0) {
-                        toPay += Math.abs(balance);
+                if (txnError) throw txnError;
+
+                // Calculate totals from transactions
+                let totalCredit = 0;
+                let totalPayment = 0;
+
+                transactions?.forEach(txn => {
+                    const amount = parseFloat(txn.amount) || 0;
+                    if (txn.type === 'CREDIT') {
+                        totalCredit += amount;
+                    } else if (txn.type === 'PAYMENT') {
+                        totalPayment += amount;
                     }
                 });
 
                 // Update UI
                 document.getElementById('totalCustomers').textContent = customers.length;
-                document.getElementById('toReceive').textContent = `₹${toReceive.toLocaleString('en-IN')}`;
-                document.getElementById('toPay').textContent = `₹${toPay.toLocaleString('en-IN')}`;
+                document.getElementById('totalCredit').textContent = `₹${totalCredit.toLocaleString('en-IN', {maximumFractionDigits: 0})}`;
+                document.getElementById('totalPayment').textContent = `₹${totalPayment.toLocaleString('en-IN', {maximumFractionDigits: 0})}`;
             } catch (error) {
                 console.error('Error loading stats:', error);
             }
@@ -872,7 +880,7 @@
                         </thead>
                         <tbody>
                             ${customers.map(customer => {
-                                const balance = customer.total_balance || 0;
+                                const balance = parseFloat(customer.total_balance) || 0;
                                 const balanceColor = balance > 0 ? 'var(--secondary)' : balance < 0 ? 'var(--danger)' : 'var(--gray)';
                                 const statusBadge = balance > 0 ? 'badge-success' : balance < 0 ? 'badge-danger' : 'badge-warning';
                                 const statusText = balance > 0 ? 'To Receive' : balance < 0 ? 'To Pay' : 'Settled';
@@ -881,7 +889,7 @@
                                     <tr>
                                         <td><strong>${customer.customer_name}</strong></td>
                                         <td>${customer.phone_number || 'N/A'}</td>
-                                        <td style="color: ${balanceColor}; font-weight: 600;">₹${Math.abs(balance).toLocaleString('en-IN')}</td>
+                                        <td style="color: ${balanceColor}; font-weight: 600;">₹${Math.abs(balance).toLocaleString('en-IN', {maximumFractionDigits: 2})}</td>
                                         <td><span class="badge ${statusBadge}">${statusText}</span></td>
                                     </tr>
                                 `;
