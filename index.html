@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,6 +20,7 @@
             --gray: #64748b;
             --light: #f1f5f9;
             --white: #ffffff;
+            --danger: #ef4444;
         }
 
         body {
@@ -108,6 +107,17 @@
         .btn-outline:hover {
             background: var(--primary);
             color: var(--white);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
 
         /* Hero Section */
@@ -352,10 +362,10 @@
     <nav>
         <div class="nav-container">
             <div class="logo">📒 UdharKhata Plus</div>
-            <div class="nav-links">
+            <div class="nav-links" id="navLinks">
                 <a href="#features">Features</a>
                 <a href="#pricing">Pricing</a>
-                <button class="btn btn-primary" onclick="openLoginModal()">Login</button>
+                <button type="button" class="btn btn-primary" onclick="openLoginModal()">Login</button>
             </div>
         </div>
     </nav>
@@ -365,8 +375,8 @@
         <div class="hero-content">
             <h1>Smart Credit Ledger for Your Business</h1>
             <p>Complete digital ledger solution for managing customer accounts, tracking transactions, and growing your business. Built for Indian retailers and wholesalers.</p>
-            <div class="hero-buttons">
-                <button class="btn btn-primary" onclick="openLoginModal()">Get Started Free</button>
+            <div class="hero-buttons" id="heroButtons">
+                <button type="button" class="btn btn-primary" onclick="openLoginModal()">Get Started Free</button>
                 <a href="#features" class="btn btn-outline">Learn More</a>
             </div>
         </div>
@@ -424,7 +434,7 @@
                     <li>✓ QR code payments</li>
                     <li>✓ WhatsApp/SMS reminders</li>
                 </ul>
-                <button class="btn btn-outline" onclick="openLoginModal()">Choose Plan</button>
+                <button type="button" class="btn btn-outline" onclick="openLoginModal()">Choose Plan</button>
             </div>
             <div class="pricing-card featured">
                 <div class="pricing-badge">Most Popular</div>
@@ -437,7 +447,7 @@
                     <li>✓ Priority support</li>
                     <li>✓ Best value - Save 20%</li>
                 </ul>
-                <button class="btn btn-primary" onclick="openLoginModal()">Choose Plan</button>
+                <button type="button" class="btn btn-primary" onclick="openLoginModal()">Choose Plan</button>
             </div>
             <div class="pricing-card">
                 <h3>18 Months</h3>
@@ -449,7 +459,7 @@
                     <li>✓ Early feature access</li>
                     <li>✓ Premium support</li>
                 </ul>
-                <button class="btn btn-outline" onclick="openLoginModal()">Choose Plan</button>
+                <button type="button" class="btn btn-outline" onclick="openLoginModal()">Choose Plan</button>
             </div>
         </div>
     </section>
@@ -490,6 +500,12 @@
             document.getElementById('loginModal').classList.remove('active');
         }
 
+        // Logout function
+        async function logoutFromIndex() {
+            await supabaseClient.auth.signOut();
+            location.reload();
+        }
+
         // Login form handler
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -515,18 +531,23 @@
             }
         });
 
-        // Check if user is already logged in
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (session && event === 'SIGNED_IN') {
-                window.location.href = 'dashboard.html';
-            }
-        });
-
-        // Check session on page load
+        // Check if user is already logged in and update UI accordingly
         (async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
-                window.location.href = 'dashboard.html';
+                // User is logged in - show dashboard link instead of login
+                const navLinks = document.getElementById('navLinks');
+                navLinks.innerHTML = `
+                    <a href="#features">Features</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a>
+                `;
+
+                const heroButtons = document.getElementById('heroButtons');
+                heroButtons.innerHTML = `
+                    <a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a>
+                    <button type="button" class="btn btn-danger" onclick="logoutFromIndex()">Logout</button>
+                `;
             }
         })();
     </script>
