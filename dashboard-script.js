@@ -277,7 +277,6 @@ async function logout() {
     }
 }
 
-
 // Toggle sidebar
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('open');
