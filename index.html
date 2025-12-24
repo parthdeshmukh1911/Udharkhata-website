@@ -51,21 +51,20 @@
             align-items: center;
         }
 
-       .logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-.logo-img {
-    width: 40px;
-    height: 40px;
-    object-fit: contain;
-}
-
+        .logo-img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
 
         .nav-links {
             display: flex;
@@ -126,6 +125,25 @@
             background: #dc2626;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Download button - High contrast on blue background */
+        .btn-download {
+            background: var(--white);
+            color: var(--primary);
+            border: 3px solid var(--white);
+            font-size: 1.2rem;
+            padding: 1.2rem 2.5rem;
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-download:hover {
+            background: var(--secondary);
+            color: var(--white);
+            border-color: var(--secondary);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
         }
 
         /* Hero Section */
@@ -370,15 +388,6 @@
             text-align: center;
             color: rgba(255, 255, 255, 0.6);
         }
-        .footer-section .btn {
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
-    padding: 0.6rem 1.2rem;
-}
-
-.footer-section .btn:hover {
-    transform: translateY(-2px);
-}
 
         .footer-links {
             display: flex;
@@ -396,6 +405,17 @@
 
         .footer-links a:hover {
             color: var(--white);
+        }
+
+        /* Download button in footer */
+        .footer-section .btn {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            padding: 0.6rem 1.2rem;
+        }
+
+        .footer-section .btn:hover {
+            transform: translateY(-2px);
         }
 
         /* Modal */
@@ -506,11 +526,10 @@
     <!-- Navigation -->
     <nav>
         <div class="nav-container">
-           <div class="logo">
-    <img src="./assets/UdharKhata2.png" alt="UdharKhata Plus" class="logo-img">
-    <span>UdharKhata Plus</span>
-</div>
-
+            <div class="logo">
+                <img src="./assets/UdharKhata2.png" alt="UdharKhata Plus" class="logo-img">
+                <span>UdharKhata Plus</span>
+            </div>
             <div class="nav-links" id="navLinks">
                 <a href="#features">Features</a>
                 <a href="#pricing">Pricing</a>
@@ -526,8 +545,11 @@
             <h1>Smart and Secure Credit Ledger for Your Business</h1>
             <p>Complete digital ledger solution for managing customer accounts, tracking transactions, and growing your business. Built for Indian retailers and wholesalers.</p>
             <div class="hero-buttons" id="heroButtons">
-                <button type="button" class="btn btn-primary" onclick="openLoginModal()">Get Started Free</button>
-                <a href="#features" class="btn btn-outline">Learn More</a>
+                <a href="https://github.com/parthdeshmukh1911/Udharkhata-website/releases/download/Udharkhataplus/app-release.apk" 
+                   class="btn btn-download" 
+                   download>
+                    📱 Download APK (Free)
+                </a>
             </div>
         </div>
     </section>
@@ -661,33 +683,30 @@
 
             <div class="footer-section">
                 <h3>Legal</h3>
-               <a href="privacy.html">Privacy Policy</a>
+                <a href="privacy.html">Privacy Policy</a>
                 <a href="terms.html">Terms of Service</a>
-                <!-- <a href="#refund">Refund Policy</a> -->
                 <a href="#contact">Contact Us</a>
             </div>
 
             <div class="footer-section">
-    <h3>Download App</h3>
-    <p style="margin-bottom: 1rem;">Download the latest version:</p>
-    <a href="https://github.com/parthdeshmukh1911/Udharkhata-website/releases/download/Udharkhataplus/app-release.apk" 
-       class="btn btn-primary" 
-       style="display: inline-block; margin-bottom: 1rem;"
-       download>
-        📱 Download APK
-    </a>
-    <p style="font-size: 0.9rem; margin-top: 1rem;">Coming soon on:</p>
-    <p>📱 Google Play Store</p>
-    <p>🍎 Apple App Store</p>
-</div>
-
+                <h3>Download App</h3>
+                <p style="margin-bottom: 1rem;">Download the latest version:</p>
+                <a href="https://github.com/parthdeshmukh1911/Udharkhata-website/releases/download/Udharkhataplus/app-release.apk" 
+                   class="btn btn-primary" 
+                   style="display: inline-block; margin-bottom: 1rem;"
+                   download>
+                    📱 Download APK
+                </a>
+                <p style="font-size: 0.9rem; margin-top: 1rem;">Coming soon on:</p>
+                <p>📱 Google Play Store</p>
+                <p>🍎 Apple App Store</p>
+            </div>
         </div>
 
         <div class="footer-bottom">
             <div class="footer-links">
                 <a href="privacy.html">Privacy</a>
                 <a href="terms.html">Terms</a>
-                <!-- <a href="#refund">Refund</a> -->
                 <a href="#contact">Contact</a>
             </div>
             <p>&copy; 2025 UdharKhata Plus. All rights reserved. Made with ❤️ in India.</p>
@@ -778,8 +797,8 @@
 
                 const heroButtons = document.getElementById('heroButtons');
                 heroButtons.innerHTML = `
-                    <a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a>
-                    <button type="button" class="btn btn-danger" onclick="logoutFromIndex()">Logout</button>
+                    <a href="dashboard.html" class="btn" style="background: white; color: #1e40af; border: 3px solid white; font-size: 1.2rem; padding: 1.2rem 2.5rem; font-weight: 700;">Go to Dashboard</a>
+                    <button type="button" class="btn" style="background: #ef4444; color: white; font-size: 1.1rem; padding: 1rem 2rem;" onclick="logoutFromIndex()">Logout</button>
                 `;
             }
         })();
