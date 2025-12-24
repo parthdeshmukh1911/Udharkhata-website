@@ -271,11 +271,12 @@ async function loadSummaryPage() {
 
 // Logout
 async function logout() {
-    if (confirm('Are you sure you want to logout?')) {
-        await supabaseClient.auth.signOut();
+    if (confirm('Are you sure you want to logout from this browser?')) {
+        await supabaseClient.auth.signOut({ scope: 'local' });
         window.location.href = 'index.html';
     }
 }
+
 
 // Toggle sidebar
 function toggleSidebar() {
