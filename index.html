@@ -51,14 +51,21 @@
             align-items: center;
         }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+       .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo-img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
 
         .nav-links {
             display: flex;
@@ -490,7 +497,11 @@
     <!-- Navigation -->
     <nav>
         <div class="nav-container">
-            <div class="logo">📒 UdharKhata Plus</div>
+           <div class="logo">
+    <img src="./assets/UdharKhata2.png" alt="UdharKhata Plus" class="logo-img">
+    <span>UdharKhata Plus</span>
+</div>
+
             <div class="nav-links" id="navLinks">
                 <a href="#features">Features</a>
                 <a href="#pricing">Pricing</a>
