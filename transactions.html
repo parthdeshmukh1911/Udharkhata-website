@@ -4,28 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transactions - UdharKhata Plus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="dashboard-style.css">
 </head>
 <body>
-    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
     
     <aside class="sidebar" id="sidebar">
-        <div class="logo">📒 UdharKhata Plus</div>
+        <div class="logo"><i class="fas fa-book"></i> UdharKhata Plus</div>
         <ul class="menu">
             <li class="menu-item" onclick="location.href='dashboard.html'">
-                <span class="menu-icon">📊</span><span>Dashboard</span>
+                <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+                <span>Dashboard</span>
             </li>
             <li class="menu-item" onclick="location.href='customers.html'">
-                <span class="menu-icon">👥</span><span>Customers</span>
+                <span class="menu-icon"><i class="fas fa-users"></i></span>
+                <span>Customers</span>
             </li>
             <li class="menu-item active">
-                <span class="menu-icon">💰</span><span>Transactions</span>
+                <span class="menu-icon"><i class="fas fa-exchange-alt"></i></span>
+                <span>Transactions</span>
             </li>
             <li class="menu-item" onclick="location.href='summary.html'">
-                <span class="menu-icon">📈</span><span>Summary</span>
-            </li>
-            <li class="menu-item" onclick="logout()">
-                <span class="menu-icon">🚪</span><span>Logout</span>
+                <span class="menu-icon"><i class="fas fa-chart-pie"></i></span>
+                <span>Summary</span>
             </li>
         </ul>
     </aside>
@@ -33,8 +35,11 @@
     <main class="main-content">
         <header class="header">
             <div class="header-left">
-                <h1>Transactions 💰</h1>
+                <h1><i class="fas fa-exchange-alt"></i> Transactions</h1>
                 <p>View all transaction history</p>
+            </div>
+            <div class="header-right">
+                <button type="button" class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
         </header>
 
