@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - UdharKhata Plus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -27,8 +28,27 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: var(--light);
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
             color: var(--dark);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
         }
 
         /* Mobile Menu Toggle */
@@ -59,11 +79,11 @@
             top: 0;
             width: 260px;
             height: 100vh;
-            background: var(--white);
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.08);
             padding: 2rem 0;
             overflow-y: auto;
-            transition: transform 0.3s;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1000;
         }
 
@@ -76,6 +96,15 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo i {
+            font-size: 1.8rem;
         }
 
         .menu {
@@ -84,20 +113,39 @@
 
         .menu-item {
             padding: 0.75rem 1.5rem;
-            margin: 0.25rem 0;
+            margin: 0.25rem 0.5rem;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             gap: 0.75rem;
             color: var(--gray);
             text-decoration: none;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 0;
+            background: var(--primary);
+            border-radius: 0 4px 4px 0;
+            transition: height 0.3s ease;
         }
 
         .menu-item:hover, .menu-item.active {
-            background: var(--light);
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%);
             color: var(--primary);
-            border-right: 3px solid var(--primary);
+            transform: translateX(5px);
+        }
+
+        .menu-item:hover::before, .menu-item.active::before {
+            height: 70%;
         }
 
         .menu-icon {
@@ -238,14 +286,32 @@
         .stat-card {
             background: var(--white);
             padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s, box-shadow 0.3s;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
         }
 
         .stat-header {
@@ -262,13 +328,18 @@
         }
 
         .stat-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover .stat-icon {
+            transform: scale(1.1) rotate(5deg);
         }
 
         .stat-value {
@@ -293,8 +364,13 @@
         .card {
             background: var(--white);
             padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
         }
 
         .card-header {
@@ -381,37 +457,57 @@
         }
 
         .action-btn {
-            background: var(--light);
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
             padding: 1rem;
-            border-radius: 10px;
+            border-radius: 12px;
             border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 1rem;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
         }
 
         .action-btn:hover {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: var(--white);
-            transform: translateX(5px);
+            transform: translateX(8px) scale(1.02);
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
         }
 
         .action-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
             background: var(--white);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
+            transition: all 0.3s ease;
         }
 
         .action-btn:hover .action-icon {
             background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1) rotate(-5deg);
         }
 
         /* Customers Table */
@@ -576,34 +672,33 @@
 
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
-        <div class="logo">📒 UdharKhata Plus</div>
+        <div class="logo"><i class="fas fa-book"></i> UdharKhata Plus</div>
         <ul class="menu">
             <li class="menu-item active">
-                <span class="menu-icon">📊</span>
+                <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
                 <span>Dashboard</span>
             </li>
             <li class="menu-item" onclick="location.href='customers.html'">
-                <span class="menu-icon">👥</span>
+                <span class="menu-icon"><i class="fas fa-users"></i></span>
                 <span>Customers</span>
             </li>
             <li class="menu-item" onclick="location.href='transactions.html'">
-                <span class="menu-icon">💰</span>
+                <span class="menu-icon"><i class="fas fa-exchange-alt"></i></span>
                 <span>Transactions</span>
             </li>
             <li class="menu-item" onclick="location.href='summary.html'">
-                <span class="menu-icon">📈</span>
+                <span class="menu-icon"><i class="fas fa-chart-pie"></i></span>
                 <span>Summary</span>
             </li>
-    
         </ul>
     </aside>
 
     <!-- Main Content -->
     <main class="main-content">
         <!-- Header -->
-        <header class="header">
+        <header class="header fade-in">
             <div class="header-left">
-                <h1>Welcome back, <span id="userName">User</span>! 👋</h1>
+                <h1>Welcome back, <span id="userName">User</span>! <i class="fas fa-hand-wave" style="color: #f59e0b;"></i></h1>
                 <p id="currentDate"></p>
             </div>
             <div class="header-right">
@@ -612,43 +707,43 @@
                     <div class="user-email" id="userEmail">Loading...</div>
                 </div>
                 <div class="user-avatar" id="userAvatar">U</div>
-                <button type="button" class="logout-btn" onclick="logout()">Logout</button>
+                <button type="button" class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
         </header>
 
         <!-- Stats Grid -->
         <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card fade-in" style="animation-delay: 0.1s;">
                 <div class="stat-header">
                     <span class="stat-title">Total Customers</span>
-                    <div class="stat-icon" style="background: #dbeafe; color: #3b82f6;">👥</div>
+                    <div class="stat-icon" style="background: #dbeafe; color: #3b82f6;"><i class="fas fa-users"></i></div>
                 </div>
                 <div class="stat-value" id="totalCustomers">0</div>
                 <div class="stat-subtitle">Active customers</div>
             </div>
 
-            <div class="stat-card">
+            <div class="stat-card fade-in" style="animation-delay: 0.2s;">
                 <div class="stat-header">
                     <span class="stat-title">Total Credit Given</span>
-                    <div class="stat-icon" style="background: #d1fae5; color: #10b981;">💰</div>
+                    <div class="stat-icon" style="background: #d1fae5; color: #10b981;"><i class="fas fa-hand-holding-usd"></i></div>
                 </div>
                 <div class="stat-value" style="color: var(--secondary);" id="totalCredit">₹0</div>
                 <div class="stat-subtitle">Money lent to customers</div>
             </div>
 
-            <div class="stat-card">
+            <div class="stat-card fade-in" style="animation-delay: 0.3s;">
                 <div class="stat-header">
                     <span class="stat-title">Total Payment Received</span>
-                    <div class="stat-icon" style="background: #fee2e2; color: #ef4444;">📥</div>
+                    <div class="stat-icon" style="background: #fee2e2; color: #ef4444;"><i class="fas fa-wallet"></i></div>
                 </div>
                 <div class="stat-value" style="color: var(--danger);" id="totalPayment">₹0</div>
                 <div class="stat-subtitle">Money received back</div>
             </div>
 
-            <div class="stat-card">
+            <div class="stat-card fade-in" style="animation-delay: 0.4s;">
                 <div class="stat-header">
                     <span class="stat-title">Net Outstanding</span>
-                    <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;">📊</div>
+                    <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;"><i class="fas fa-chart-line"></i></div>
                 </div>
                 <div class="stat-value" style="color: var(--warning);" id="netOutstanding">₹0</div>
                 <div class="stat-subtitle">Credit - Payment</div>
@@ -657,37 +752,37 @@
 
         <!-- Additional Summary Stats -->
         <div class="stats-grid" style="margin-top: 1rem;">
-            <div class="stat-card">
+            <div class="stat-card fade-in" style="animation-delay: 0.5s;">
                 <div class="stat-header">
                     <span class="stat-title">Customers with Credit</span>
-                    <div class="stat-icon" style="background: #dbeafe; color: #3b82f6;">👤</div>
+                    <div class="stat-icon" style="background: #dbeafe; color: #3b82f6;"><i class="fas fa-user-check"></i></div>
                 </div>
                 <div class="stat-value" id="customersWithCredit">0</div>
                 <div class="stat-subtitle">Have outstanding balance</div>
             </div>
 
-            <div class="stat-card">
+            <div class="stat-card fade-in" style="animation-delay: 0.6s;">
                 <div class="stat-header">
                     <span class="stat-title">Settled Customers</span>
-                    <div class="stat-icon" style="background: #d1fae5; color: #10b981;">✓</div>
+                    <div class="stat-icon" style="background: #d1fae5; color: #10b981;"><i class="fas fa-check-circle"></i></div>
                 </div>
                 <div class="stat-value" id="settledCustomers">0</div>
                 <div class="stat-subtitle">Zero balance</div>
             </div>
 
-            <div class="stat-card">
+            <div class="stat-card fade-in" style="animation-delay: 0.7s;">
                 <div class="stat-header">
                     <span class="stat-title">Average Outstanding</span>
-                    <div class="stat-icon" style="background: #fee2e2; color: #ef4444;">📊</div>
+                    <div class="stat-icon" style="background: #fee2e2; color: #ef4444;"><i class="fas fa-calculator"></i></div>
                 </div>
                 <div class="stat-value" style="color: var(--danger);" id="avgOutstanding">₹0</div>
                 <div class="stat-subtitle">Per customer with credit</div>
             </div>
 
-            <div class="stat-card">
+            <div class="stat-card fade-in" style="animation-delay: 0.8s;">
                 <div class="stat-header">
                     <span class="stat-title">Subscription</span>
-                    <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;">⭐</div>
+                    <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;"><i class="fas fa-crown"></i></div>
                 </div>
                 <div class="stat-value" style="font-size: 1.5rem;" id="subscriptionStatus">Free</div>
                 <div class="stat-subtitle" id="subscriptionExpiry">No active plan</div>
@@ -717,28 +812,28 @@
                 </div>
                 <div class="quick-actions">
                     <button class="action-btn" onclick="alert('APK download link will be added here. Please check APK_SETUP.md for instructions.')">
-                        <div class="action-icon">📱</div>
+                        <div class="action-icon"><i class="fas fa-mobile-alt"></i></div>
                         <div>
                             <div style="font-weight: 600;">Download App</div>
                             <div style="font-size: 0.85rem; color: var(--gray);">Get Android APK</div>
                         </div>
                     </button>
                     <button class="action-btn" onclick="alert('Feature coming soon!')">
-                        <div class="action-icon">📄</div>
+                        <div class="action-icon"><i class="fas fa-file-pdf"></i></div>
                         <div>
                             <div style="font-weight: 600;">Monthly Report</div>
                             <div style="font-size: 0.85rem; color: var(--gray);">Download PDF report</div>
                         </div>
                     </button>
                     <button class="action-btn" onclick="alert('Manage in mobile app!')">
-                        <div class="action-icon">⚙️</div>
+                        <div class="action-icon"><i class="fas fa-cog"></i></div>
                         <div>
                             <div style="font-weight: 600;">Settings</div>
                             <div style="font-size: 0.85rem; color: var(--gray);">Update your profile</div>
                         </div>
                     </button>
                     <button class="action-btn" onclick="alert('Upgrade in mobile app!')">
-                        <div class="action-icon">⭐</div>
+                        <div class="action-icon"><i class="fas fa-crown"></i></div>
                         <div>
                             <div style="font-weight: 600;">Upgrade Plan</div>
                             <div style="font-size: 0.85rem; color: var(--gray);">Go premium</div>

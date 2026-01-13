@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UdharKhata Plus - Smart Credit Ledger for Your Business</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -31,6 +32,50 @@
             overflow-x: hidden;
         }
 
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .animate-delay-1 { animation-delay: 0.1s; }
+        .animate-delay-2 { animation-delay: 0.2s; }
+        .animate-delay-3 { animation-delay: 0.3s; }
+        .animate-delay-4 { animation-delay: 0.4s; }
+        .animate-delay-5 { animation-delay: 0.5s; }
+        .animate-delay-6 { animation-delay: 0.6s; }
+
         /* Navigation */
         nav {
             position: fixed;
@@ -40,6 +85,12 @@
             backdrop-filter: blur(10px);
             z-index: 1000;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.98);
         }
 
         .nav-container {
@@ -58,6 +109,11 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
         }
 
         .logo-img {
@@ -76,11 +132,27 @@
             text-decoration: none;
             color: var(--dark);
             font-weight: 500;
-            transition: color 0.3s;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
         }
 
         .nav-links a:hover {
             color: var(--primary);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
         }
 
         .btn {
@@ -153,23 +225,52 @@
             background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
             color: var(--white);
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -5%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            animation: float 8s ease-in-out infinite;
+            animation-delay: 1s;
         }
 
         .hero-content {
             max-width: 800px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .hero h1 {
             font-size: 3.5rem;
             margin-bottom: 1.5rem;
             line-height: 1.2;
+            animation: fadeInUp 1s ease;
         }
 
         .hero p {
             font-size: 1.25rem;
             margin-bottom: 2rem;
             opacity: 0.95;
+            animation: fadeInUp 1s ease 0.2s backwards;
         }
 
         .hero-buttons {
@@ -177,6 +278,7 @@
             gap: 1rem;
             justify-content: center;
             flex-wrap: wrap;
+            animation: fadeInUp 1s ease 0.4s backwards;
         }
 
         .hero .btn {
@@ -217,20 +319,44 @@
 
         .feature-card {
             padding: 2rem;
-            background: var(--light);
-            border-radius: 12px;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border-left: 4px solid var(--primary);
+            background: var(--white);
+            border-radius: 16px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(30, 64, 175, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
         }
 
         .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(30, 64, 175, 0.15);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(30, 64, 175, 0.2);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
         }
 
         .feature-icon {
-            font-size: 3rem;
+            font-size: 3.5rem;
             margin-bottom: 1rem;
+            display: inline-block;
+            transition: transform 0.4s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.2) rotate(5deg);
         }
 
         .feature-card h3 {
@@ -496,14 +622,54 @@
             font-weight: 600;
         }
 
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .hero h1 {
-                font-size: 2.5rem;
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .mobile-menu-btn {
+                display: block;
             }
 
             .nav-links {
                 display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                gap: 0;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-links a {
+                padding: 1rem;
+                border-bottom: 1px solid var(--light);
+            }
+
+            .nav-links .btn {
+                margin-top: 0.5rem;
             }
 
             .features-grid, .pricing-grid {
@@ -524,17 +690,20 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav>
+    <nav id="navbar">
         <div class="nav-container">
             <div class="logo">
                 <img src="./assets/UdharKhata2.png" alt="UdharKhata Plus" class="logo-img">
                 <span>UdharKhata Plus</span>
             </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
             <div class="nav-links" id="navLinks">
-                <a href="#features">Features</a>
-                <a href="#pricing">Pricing</a>
-                <a href="#about">About</a>
-                <button type="button" class="btn btn-primary" onclick="openLoginModal()">Login</button>
+                <a href="#features"><i class="fas fa-star"></i> Features</a>
+                <a href="#pricing"><i class="fas fa-tag"></i> Pricing</a>
+                <a href="#about"><i class="fas fa-info-circle"></i> About</a>
+                <button type="button" class="btn btn-primary" onclick="openLoginModal()"><i class="fas fa-sign-in-alt"></i> Login</button>
             </div>
         </div>
     </nav>
@@ -542,13 +711,13 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>Smart and Secure Credit Ledger for Your Business</h1>
+            <h1><i class="fas fa-book"></i> Smart and Secure Credit Ledger for Your Business</h1>
             <p>Complete digital ledger solution for managing customer accounts, tracking transactions, and growing your business. Built for Indian retailers and wholesalers.</p>
             <div class="hero-buttons" id="heroButtons">
                 <a href="https://github.com/parthdeshmukh1911/Udharkhata-website/releases/download/Udharkhataplus/app-release.apk" 
                    class="btn btn-download" 
                    download>
-                    📱 Download APK (Free)
+                    <i class="fas fa-mobile-alt"></i> Download APK (Free)
                 </a>
             </div>
         </div>
@@ -556,35 +725,35 @@
 
     <!-- Features Section -->
     <section id="features" class="features">
-        <h2 class="section-title">Why Choose UdharKhata Plus?</h2>
+        <h2 class="section-title animate-on-scroll">Why Choose UdharKhata Plus?</h2>
         <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🎤</div>
+            <div class="feature-card animate-on-scroll animate-delay-1">
+                <div class="feature-icon"><i class="fas fa-microphone"></i></div>
                 <h3>Voice Input</h3>
                 <p>Add transactions using voice commands in multiple Indian languages. Just speak and record!</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">📱</div>
+            <div class="feature-card animate-on-scroll animate-delay-2">
+                <div class="feature-icon"><i class="fas fa-wifi"></i></div>
                 <h3>100% Offline Capable</h3>
                 <p>Works perfectly without internet. All data stored locally with optional cloud sync.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">💳</div>
+            <div class="feature-card animate-on-scroll animate-delay-3">
+                <div class="feature-icon"><i class="fas fa-qrcode"></i></div>
                 <h3>Dynamic QR Payments</h3>
                 <p>Generate instant UPI QR codes for customers to pay directly. Accept payments via any UPI app.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">💬</div>
+            <div class="feature-card animate-on-scroll animate-delay-4">
+                <div class="feature-icon"><i class="fab fa-whatsapp"></i></div>
                 <h3>WhatsApp & SMS Alerts</h3>
                 <p>Send professional payment reminders via WhatsApp and SMS with one tap.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">📊</div>
+            <div class="feature-card animate-on-scroll animate-delay-5">
+                <div class="feature-icon"><i class="fas fa-file-pdf"></i></div>
                 <h3>PDF & Excel Reports</h3>
                 <p>Generate customer ledgers, monthly reports, and export data to Excel for backup.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">🌐</div>
+            <div class="feature-card animate-on-scroll animate-delay-6">
+                <div class="feature-icon"><i class="fas fa-language"></i></div>
                 <h3>Multi-Language Support</h3>
                 <p>Available in 16+ Indian languages including Hindi, Marathi, Tamil, Telugu, and more.</p>
             </div>
@@ -667,39 +836,39 @@
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-section">
-                <h3>UdharKhata Plus</h3>
+                <h3><i class="fas fa-book"></i> UdharKhata Plus</h3>
                 <p>Smart and secure credit ledger for your business. Built for Indian retailers and wholesalers.</p>
-                <p style="margin-top: 1rem;">📍 Amravati, Maharashtra, India</p>
-                <p>📧 udharkhataplus@gmail.com</p>
+                <p style="margin-top: 1rem;"><i class="fas fa-map-marker-alt"></i> Amravati, Maharashtra, India</p>
+                <p><i class="fas fa-envelope"></i> udharkhataplus@gmail.com</p>
             </div>
 
             <div class="footer-section">
-                <h3>Quick Links</h3>
-                <a href="#features">Features</a>
-                <a href="#pricing">Pricing</a>
-                <a href="#about">About Us</a>
-                <a href="dashboard.html">Dashboard</a>
+                <h3><i class="fas fa-link"></i> Quick Links</h3>
+                <a href="#features"><i class="fas fa-chevron-right"></i> Features</a>
+                <a href="#pricing"><i class="fas fa-chevron-right"></i> Pricing</a>
+                <a href="#about"><i class="fas fa-chevron-right"></i> About Us</a>
+                <a href="dashboard.html"><i class="fas fa-chevron-right"></i> Dashboard</a>
             </div>
 
             <div class="footer-section">
-                <h3>Legal</h3>
-                <a href="privacy.html">Privacy Policy</a>
-                <a href="terms.html">Terms of Service</a>
-                <a href="#contact">Contact Us</a>
+                <h3><i class="fas fa-gavel"></i> Legal</h3>
+                <a href="privacy.html"><i class="fas fa-chevron-right"></i> Privacy Policy</a>
+                <a href="terms.html"><i class="fas fa-chevron-right"></i> Terms of Service</a>
+                <a href="#contact"><i class="fas fa-chevron-right"></i> Contact Us</a>
             </div>
 
             <div class="footer-section">
-                <h3>Download App</h3>
+                <h3><i class="fas fa-download"></i> Download App</h3>
                 <p style="margin-bottom: 1rem;">Download the latest version:</p>
                 <a href="https://github.com/parthdeshmukh1911/Udharkhata-website/releases/download/Udharkhataplus/app-release.apk" 
                    class="btn btn-primary" 
                    style="display: inline-block; margin-bottom: 1rem;"
                    download>
-                    📱 Download APK
+                    <i class="fas fa-mobile-alt"></i> Download APK
                 </a>
                 <p style="font-size: 0.9rem; margin-top: 1rem;">Coming soon on:</p>
-                <p>📱 Google Play Store</p>
-                <p>🍎 Apple App Store</p>
+                <p><i class="fab fa-google-play"></i> Google Play Store</p>
+                <p><i class="fab fa-apple"></i> Apple App Store</p>
             </div>
         </div>
 
@@ -739,6 +908,40 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1Z2tobm1vZ295dW54YmZ6Y25wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAyNjIyMzYsImV4cCI6MjA3NTgzODIzNn0.xJ5Xlj4kD43CROsXOdrokWwqHZ01XtbUxJRfzwP6Lwg';
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
 
         // Modal functions
         function openLoginModal() {
@@ -789,16 +992,16 @@
                 // User is logged in - show dashboard link instead of login
                 const navLinks = document.getElementById('navLinks');
                 navLinks.innerHTML = `
-                    <a href="#features">Features</a>
-                    <a href="#pricing">Pricing</a>
-                    <a href="#about">About</a>
-                    <a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a>
+                    <a href="#features"><i class="fas fa-star"></i> Features</a>
+                    <a href="#pricing"><i class="fas fa-tag"></i> Pricing</a>
+                    <a href="#about"><i class="fas fa-info-circle"></i> About</a>
+                    <a href="dashboard.html" class="btn btn-primary"><i class="fas fa-tachometer-alt"></i> Go to Dashboard</a>
                 `;
 
                 const heroButtons = document.getElementById('heroButtons');
                 heroButtons.innerHTML = `
-                    <a href="dashboard.html" class="btn" style="background: white; color: #1e40af; border: 3px solid white; font-size: 1.2rem; padding: 1.2rem 2.5rem; font-weight: 700;">Go to Dashboard</a>
-                    <button type="button" class="btn" style="background: #ef4444; color: white; font-size: 1.1rem; padding: 1rem 2rem;" onclick="logoutFromIndex()">Logout</button>
+                    <a href="dashboard.html" class="btn" style="background: white; color: #1e40af; border: 3px solid white; font-size: 1.2rem; padding: 1.2rem 2.5rem; font-weight: 700;"><i class="fas fa-tachometer-alt"></i> Go to Dashboard</a>
+                    <button type="button" class="btn" style="background: #ef4444; color: white; font-size: 1.1rem; padding: 1rem 2rem;" onclick="logoutFromIndex()"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 `;
             }
         })();
